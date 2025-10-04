@@ -5,6 +5,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://ddingcha.com'),
   title: "DdingCha | Fast, Simple Shopping from TikTok",
   description: "We bring trending products straight to your door. No hassle, no delays—just quality items delivered fast.",
   keywords: ["TikTok shopping", "fast delivery", "online shopping", "trending products"],

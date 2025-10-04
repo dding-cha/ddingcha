@@ -129,7 +129,7 @@ export function ContactForm() {
 
       {isSuccess && (
         <p className="text-sm text-primary" role="status">
-          Message sent successfully! We'll get back to you soon.
+          Message sent successfully! We&apos;ll get back to you soon.
         </p>
       )}
 
