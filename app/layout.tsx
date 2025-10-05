@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
-import { Header } from "@/widgets/header"
-import { Footer } from "@/widgets/footer"
+import { LayoutContent } from "./layout-content"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -45,11 +44,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="font-noto w-full flex flex-col min-h-screen">
-        <Header />
-        <main className="flex flex-1">
-          {children}
-        </main>
-        <Footer />
+        <LayoutContent>{children}</LayoutContent>
       </body>
     </html>
   )

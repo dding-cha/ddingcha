@@ -10,7 +10,9 @@
       "Bash(find:*)",
       "WebFetch(domain:www.musinsa.com)",
       "WebFetch(domain:www.coupang.com)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []
