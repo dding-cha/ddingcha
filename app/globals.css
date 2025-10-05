@@ -3,49 +3,127 @@
 @tailwind utilities;
 
 @layer base {
+  @font-face {
+    font-family: 'Noto Sans KR';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('/fonts/NotoSansKR-Light.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'Noto Sans KR';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/NotoSansKR-Regular.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'Noto Sans KR';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/NotoSansKR-Medium.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'Noto Sans KR';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/NotoSansKR-Bold.woff2') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'Noto Sans KR';
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url('/fonts/NotoSansKR-Black.woff2') format('woff2');
+  }
+}
+
+@layer base {
   :root {
+    /* Base colors - Clean, minimal for e-commerce */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 240 10% 3.9%;
+
+    /* Card components - Subtle elevation */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 10% 3.9%;
+
+    /* Popover components */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 240 10% 3.9%;
+
+    /* Primary - Coral/Pink for e-commerce shopping (based on coral-500) */
+    --primary: 11 92% 66%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Soft warm neutral for supporting elements */
+    --secondary: 24 15% 95%;
+    --secondary-foreground: 240 10% 3.9%;
+
+    /* Muted - Subtle backgrounds and disabled states */
+    --muted: 24 10% 97%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    /* Accent - Vibrant coral for hover states and highlights */
+    --accent: 11 92% 66%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive - Error states and warnings */
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Borders and inputs - Light, clean separation */
+    --border: 24 15% 90%;
+    --input: 24 15% 90%;
+    --ring: 11 92% 66%;
+
+    /* Border radius for modern e-commerce feel */
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* Base colors - Dark mode with warm undertones */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    /* Card components - Elevated dark surfaces */
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 98%;
+
+    /* Popover components */
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary - Vibrant coral maintained for dark mode */
+    --primary: 11 92% 66%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Warm dark gray for supporting elements */
+    --secondary: 240 10% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    /* Muted - Subtle dark backgrounds */
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 64.9%;
+
+    /* Accent - Bright coral for dark mode highlights */
+    --accent: 11 92% 66%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive - Softer red for dark mode */
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Borders and inputs - Subtle separation in dark mode */
+    --border: 240 10% 20%;
+    --input: 240 10% 20%;
+    --ring: 11 92% 66%;
   }
 }
 

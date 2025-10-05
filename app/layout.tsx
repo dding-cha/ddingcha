@@ -1,35 +1,39 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Header } from "@/widgets/header"
+import { Footer } from "@/widgets/footer"
 import "./globals.css"
-
-const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://ddingcha.com'),
-  title: "DdingCha | Fast, Simple Shopping from TikTok",
-  description: "We bring trending products straight to your door. No hassle, no delays—just quality items delivered fast.",
-  keywords: ["TikTok shopping", "fast delivery", "online shopping", "trending products"],
+  title: "띵차 | 틱톡 트렌드 쇼핑몰",
+  description: "틱톡에서 화제인 상품을 빠르게 배송해드립니다. 2-4일 안에 트렌디한 제품을 받아보세요.",
+  keywords: ["틱톡 쇼핑", "빠른 배송", "온라인 쇼핑", "트렌드 상품", "띵차"],
   authors: [{ name: "DdingCha" }],
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
-    title: "DdingCha | Fast, Simple Shopping from TikTok",
-    description: "We bring trending products straight to your door. No hassle, no delays—just quality items delivered fast.",
+    title: "띵차 | 틱톡 트렌드 쇼핑몰",
+    description: "틱톡에서 화제인 상품을 빠르게 배송해드립니다. 2-4일 안에 트렌디한 제품을 받아보세요.",
     url: "https://ddingcha.com",
-    siteName: "DdingCha",
+    siteName: "띵차",
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "DdingCha",
+        alt: "띵차",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "DdingCha | Fast, Simple Shopping from TikTok",
-    description: "We bring trending products straight to your door. No hassle, no delays—just quality items delivered fast.",
-    images: ["/og-image.png"],
+    title: "띵차 | 틱톡 트렌드 쇼핑몰",
+    description: "틱톡에서 화제인 상품을 빠르게 배송해드립니다. 2-4일 안에 트렌디한 제품을 받아보세요.",
+    images: ["/logo.png"],
   },
 }
 
@@ -39,8 +43,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="ko">
+      <body className="font-noto w-full flex flex-col min-h-screen">
+        <Header />
+        <main className="flex flex-1">
+          {children}
+        </main>
+        <Footer />
+      </body>
     </html>
   )
 }

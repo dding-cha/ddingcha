@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(curl -o \"NotoSansKR-Regular.woff2\" \"https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H4-feE.woff2\")",
+      "Bash(curl -o \"NotoSansKR-Medium.woff2\" \"https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H4efeE.woff2\")",
+      "Bash(curl -o \"NotoSansKR-Bold.woff2\" \"https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H5CfeE.woff2\")",
+      "Bash(curl -o \"NotoSansKR-Black.woff2\" \"https://fonts.gstatic.com/s/notosanskr/v36/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H5zfeE.woff2\")",
+      "Bash(find:*)",
+      "WebFetch(domain:www.musinsa.com)",
+      "WebFetch(domain:www.coupang.com)",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "ask": []
