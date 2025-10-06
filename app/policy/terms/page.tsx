@@ -34,7 +34,7 @@ export default function TermsPage() {
             </h2>
             <div className="bg-card border border-border rounded-lg p-6 sm:p-8">
               <p className="text-card-foreground leading-relaxed">
-                본 약관은 띵차(이하 "회사")가 제공하는 해외 직구 쇼핑몰 서비스(이하 "서비스")의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+                본 약관은 띵차(이하 &ldquo;회사&rdquo;)가 제공하는 해외 직구 쇼핑몰 서비스(이하 &ldquo;서비스&rdquo;)의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
               </p>
             </div>
           </section>

@@ -32,7 +32,7 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto space-y-12">
             <div className="text-center space-y-4">
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-                "이거 정말 띵작이다!"
+                &ldquo;이거 정말 띵작이다!&rdquo;
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 해외여행 중 우연히 발견한 제품, SNS에서 보고 너무나 갖고 싶었던 아이템, 국내에서는 구할 수 없는 특별한 브랜드...
@@ -119,7 +119,7 @@ export default function AboutPage() {
                 <div className="space-y-2">
                   <h3 className="text-xl font-bold text-foreground">큐레이션 - 진짜 좋은 것만 가져옵니다</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    바이어들이 직접 발품 팔아 찾은 제품들입니다. 디자인, 품질, 실용성까지 꼼꼼하게 체크하고, "이건 한국 사람들이 좋아하겠다" 싶은 것만 수입합니다. 유행 따라가기보다는, 오래 써도 질리지 않을 제대로 된 물건을 선별합니다.
+                    바이어들이 직접 발품 팔아 찾은 제품들입니다. 디자인, 품질, 실용성까지 꼼꼼하게 체크하고, &ldquo;이건 한국 사람들이 좋아하겠다&rdquo; 싶은 것만 수입합니다. 유행 따라가기보다는, 오래 써도 질리지 않을 제대로 된 물건을 선별합니다.
                   </p>
                 </div>
               </div>
