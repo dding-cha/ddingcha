@@ -11,7 +11,7 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <>
       {!isManagerPage && <Header />}
-      <main className={isManagerPage ? '' : 'flex flex-1'}>
+      <main className={isManagerPage ? '' : 'flex-1 w-full'}>
         {children}
       </main>
       {!isManagerPage && <Footer />}

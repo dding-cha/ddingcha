@@ -11,14 +11,16 @@ const footerLinks = {
     { label: "자주 묻는 질문", href: "/faq" },
   ],
   company: [
-    { label: "회사 소개", href: "#" },
-    { label: "블로그", href: "#" },
-    { label: "채용", href: "#" },
+    { label: "회사 소개", href: "/company/about" },
+    { label: "블로그", href: "/company/blog" },
+    { label: "채용", href: "/company/careers" },
   ],
   legal: [
-    { label: "개인정보처리방침", href: "#" },
-    { label: "이용약관", href: "#" },
-    { label: "쿠키 정책", href: "#" },
+    { label: "개인정보처리방침", href: "/policy/privacy" },
+    { label: "환불 정책", href: "/policy/refund" },
+    { label: "배송 정책", href: "/policy/shipping" },
+    { label: "이용약관", href: "/policy/terms" },
+    { label: "쿠키 정책", href: "/policy/cookies" },
   ],
 }
 
@@ -54,8 +56,8 @@ export function Footer() {
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="container py-12 md:py-16">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="container mx-auto py-12 md:py-16">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Image
@@ -93,12 +95,12 @@ export function Footer() {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -109,12 +111,12 @@ export function Footer() {
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

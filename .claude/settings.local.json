@@ -12,7 +12,8 @@
       "WebFetch(domain:www.coupang.com)",
       "Bash(npm run:*)",
       "Bash(npm install)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
