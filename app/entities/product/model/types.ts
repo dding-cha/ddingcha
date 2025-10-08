@@ -12,4 +12,12 @@ export interface Product {
   categoryId: CategoryId
   trending?: boolean
   badge?: string
+  description?: string
+  features?: string[]
+  specifications?: Record<string, string>
+  stock?: number
+  shippingInfo?: {
+    freeShipping: boolean
+    estimatedDays: string
+  }
 }

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Star, Heart, ShoppingCart } from 'lucide-react'
-import { Card, CardContent, CardFooter } from '@/shared/ui/card'
-import { Button } from '@/shared/ui/button'
-import { Product } from '@/entities/product/model/types'
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Star, Heart, ShoppingCart } from 'lucide-react';
+import { Card, CardContent, CardFooter } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Product } from '@/entities/product/model/types';
 
 interface ProductCardProps {
   product: Product
