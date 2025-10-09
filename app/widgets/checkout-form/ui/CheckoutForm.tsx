@@ -6,7 +6,7 @@ import { Card } from "@/shared/ui/card"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Label } from "@/shared/ui/label"
-import { MOCK_PRODUCTS } from "@/entities/product/model/mock-products"
+import { Product } from "@/entities/product/model/types"
 import { CreditCard, Smartphone, Building, Package, MapPin, User, Mail, Phone, ChevronRight } from "lucide-react"
 
 type PaymentMethod = "card" | "phone" | "bank"
@@ -19,8 +19,21 @@ export function CheckoutForm() {
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card")
   const [isProcessing, setIsProcessing] = useState(false)
+  const [product, setProduct] = useState<Product | null>(null)
 
-  const product = MOCK_PRODUCTS.find((p) => p.id === productId)
+  useEffect(() => {
+    async function fetchProduct() {
+      if (!productId) return
+      try {
+        const response = await fetch(`/api/products/${productId}`)
+        const data = await response.json()
+        setProduct(data.product)
+      } catch (error) {
+        console.error('Failed to fetch product:', error)
+      }
+    }
+    fetchProduct()
+  }, [productId])
 
   const [formData, setFormData] = useState({
     name: "",

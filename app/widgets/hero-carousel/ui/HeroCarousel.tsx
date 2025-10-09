@@ -5,7 +5,13 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import { HERO_BANNERS } from "@/entities/product/model/mock-products";
+
+const HERO_BANNERS = [
+  { id: 1, badge: "🔥 인기", price: 79000, originalPrice: 129000, discount: 39 },
+  { id: 2, badge: "⚡ 베스트", price: 199000, originalPrice: 299000, discount: 33 },
+  { id: 3, badge: "🌞 여름특가", price: 0, originalPrice: 0, discount: 50 },
+  { id: 4, badge: "🎁 신규혜택", price: 0, originalPrice: 0, discount: 20 },
+];
 
 export function HeroCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [

@@ -1,79 +1,69 @@
-import { NextResponse } from 'next/server'
-import { query } from '@/shared/lib/db/connection'
-
-interface DBProduct {
-  id: string
-  name: string
-  price: number
-  original_price: number
-  discount: number
-  rating: number
-  reviews: number
-  image: string
-  category_id: string
-  trending: number
-  badge: string | null
-  created_at: string
-  description?: string
-  features?: string
-  specifications?: string
-}
+import { NextResponse } from 'next/server';
+import { productRepository } from '@/entities/product/model/repository';
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url)
-    const all = searchParams.get('all')
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+    const search = searchParams.get('search');
+    const trending = searchParams.get('trending');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const sort = searchParams.get('sort') || 'popular'; // popular, latest, discount
 
-    // 매니저 페이지에서는 모든 상품 조회
-    if (all === 'true') {
-      const dbProducts = await query<DBProduct>(
-        'SELECT * FROM products ORDER BY created_at DESC'
-      )
+    let products;
+
+    if (search) {
+      products = await productRepository.search(search);
+    } else if (category) {
+      products = await productRepository.findByCategory(category);
+    } else if (trending === 'true') {
+      // For trending, get all and sort/paginate
+      const allTrending = await productRepository.findTrending(1000); // Get all
+
+      // Sort based on criteria
+      const sorted = [...allTrending].sort((a, b) => {
+        switch (sort) {
+          case 'popular':
+            // Sort by reviews count (popularity)
+            return b.reviews - a.reviews;
+          case 'latest':
+            // Latest products (assuming higher ID = newer)
+            return b.id.localeCompare(a.id);
+          case 'discount':
+            // Sort by discount percentage
+            return b.discount - a.discount;
+          default:
+            return b.reviews - a.reviews;
+        }
+      });
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      products = sorted.slice(startIndex, endIndex);
 
       return NextResponse.json({
-        products: dbProducts.map(p => ({
-          ...p,
-          trending: Boolean(p.trending)
-        }))
-      }, { status: 200 })
+        products,
+        pagination: {
+          page,
+          limit,
+          total: sorted.length,
+          hasMore: endIndex < sorted.length
+        }
+      }, { status: 200 });
+    } else {
+      products = await productRepository.findAll();
     }
 
-    // 일반 페이지에서는 페이지네이션
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
-    const offset = (page - 1) * limit
-
-    // Get total count
-    const countResult = await query<{ count: number }>(
-      'SELECT COUNT(*) as count FROM products'
-    )
-    const total = countResult[0]?.count || 0
-
-    // Get products
-    const dbProducts = await query<DBProduct>(
-      'SELECT * FROM products ORDER BY created_at DESC LIMIT ? OFFSET ?',
-      [limit, offset]
-    )
-
-    const hasMore = (page * limit) < total
-
-    return NextResponse.json({
-      products: dbProducts.map(p => ({
-        ...p,
-        trending: Boolean(p.trending)
-      })),
-      pagination: {
-        page,
-        limit,
-        total,
-        hasMore,
-      },
-    }, { status: 200 })
+    return NextResponse.json({ products }, { status: 200 });
   } catch (error) {
-    console.error('Database error:', error)
+    console.error('Database error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch products', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Failed to fetch products',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
-    )
+    );
   }
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ProductCard } from '@/features/product-card'
+import { ProductCardSkeleton } from '@/features/product-card/ui/ProductCardSkeleton'
 import { Product } from '@/entities/product/model/types'
 import { Loader2 } from 'lucide-react'
 
@@ -17,39 +18,6 @@ export function ProductGrid() {
   const observerRef = useRef<HTMLDivElement>(null)
   const loadedPages = useRef<Set<number>>(new Set())
 
-  // Initial load
-  useEffect(() => {
-    loadProducts(1)
-  }, [])
-
-  useEffect(() => {
-    if (initialLoading || !hasMore || loading) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const firstEntry = entries[0]
-        if (firstEntry.isIntersecting && !loading && hasMore) {
-          const nextPage = page + 1
-          if (!loadedPages.current.has(nextPage)) {
-            loadProducts(nextPage)
-          }
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    const currentRef = observerRef.current
-    if (currentRef) {
-      observer.observe(currentRef)
-    }
-
-    return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef)
-      }
-    }
-  }, [loading, page, hasMore, initialLoading])
-
   const loadProducts = async (pageNum: number) => {
     // Prevent duplicate loads
     if (loading || loadedPages.current.has(pageNum)) return
@@ -58,7 +26,7 @@ export function ProductGrid() {
     loadedPages.current.add(pageNum)
 
     try {
-      const response = await fetch(`/api/products?page=${pageNum}&limit=${ITEMS_PER_PAGE}`)
+      const response = await fetch(`/api/products?trending=true&page=${pageNum}&limit=${ITEMS_PER_PAGE}`)
 
       if (!response.ok) {
         throw new Error('Failed to fetch products')
@@ -104,11 +72,56 @@ export function ProductGrid() {
     }
   }
 
+  // Initial load
+  useEffect(() => {
+    loadProducts(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (initialLoading || !hasMore || loading) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0]
+        if (firstEntry.isIntersecting && !loading && hasMore) {
+          const nextPage = page + 1
+          if (!loadedPages.current.has(nextPage)) {
+            loadProducts(nextPage)
+          }
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    const currentRef = observerRef.current
+    if (currentRef) {
+      observer.observe(currentRef)
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, page, hasMore, initialLoading])
+
   if (initialLoading) {
     return (
       <section id="products" className="container py-20 md:py-28 bg-muted/30">
-        <div className="flex justify-center items-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            트렌딩 상품
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            틱톡에서 화제인 상품을 만나보세요. 한정 수량!
+          </p>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
         </div>
       </section>
     )

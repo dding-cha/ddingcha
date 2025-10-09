@@ -220,9 +220,41 @@ Current components: Button, Input, Label, Textarea, Card, Accordion
 - Strict mode enabled
 - Module resolution: "bundler"
 
+## Database Configuration
+
+**IMPORTANT: Use MySQL directly via mysql2, NOT Prisma or any ORM**
+
+- **Database**: MySQL (existing database at 136.117.74.19:3306)
+- **Connection**: Use `mysql2` package with connection pool
+- **Location**: Database connection utility at `app/shared/lib/db.ts`
+- **Credentials**: Loaded from `.env` file (DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
+
+### Database Schema
+Tables include:
+- `users` - User accounts (회원/비회원)
+- `delivery_addresses` - Delivery addresses
+- `products` - Product catalog
+- `carts` - Shopping cart items
+- `wishlists` - Wishlist items
+- `orders` - Order records
+- `order_items` - Order line items
+
+### API Pattern
+```ts
+// In API routes, import and use the connection pool
+import { query } from '@/shared/lib/db'
+
+export async function GET() {
+  const results = await query('SELECT * FROM products WHERE id = ?', [id])
+  return Response.json({ products: results })
+}
+```
+
 ## Key Dependencies
 
 - **Framework**: Next.js 15.5.4, React 19.2.0
+- **Database**: `mysql2` (connection pooling)
+- **Address Search**: `react-daum-postcode` (Korean address lookup)
 - **Forms**: `react-hook-form` + `zod` + `@hookform/resolvers`
 - **UI**: `@radix-ui/*` primitives via shadcn/ui
 - **Animations**: `framer-motion`
@@ -247,15 +279,17 @@ Current components: Button, Input, Label, Textarea, Card, Accordion
 
 ### Product Display
 - Product entity type: `app/entities/product/model/types.ts`
-- Mock products: `app/entities/product/model/mock-products.ts`
+- Product repository: `app/entities/product/model/repository.ts` (MySQL queries)
 - Product card feature: `app/features/product-card/ui/ProductCard.tsx`
 - Product grid widget: `app/widgets/product-grid/ui/ProductGrid.tsx`
+- Initial data: `scripts/seed-products.ts` (30 products seeded to database)
 
 Each product includes:
 - Name, price, originalPrice, discount %
 - Rating, review count
-- Category, trending badge
-- Wishlist and quick-add functionality
+- Category, trending badge, stock
+- Description, features, specifications
+- Wishlist and cart functionality (stored in database)
 
 ## Adding New Features (FSD + Next.js 15)
 
@@ -281,13 +315,14 @@ npx shadcn@latest add [component-name]
 ### Adding a New Entity
 1. Create directory: `app/entities/[entity-name]/model/`
 2. Define TypeScript types in `types.ts`
-3. Add mock data or API calls
+3. Create repository with MySQL queries in `repository.ts`
 4. Export via barrel file: `app/entities/[entity-name]/index.ts`
 
 ### FSD Import Rules
 ```tsx
 // shared/ - Can only import from external libraries
 import { clsx } from 'clsx'
+import { query } from '@/shared/lib/db/connection'
 
 // entities/ - Can import from shared/
 import { CategoryId } from '@/shared/config/categories'
@@ -298,8 +333,23 @@ import { Button } from '@/shared/ui/button'
 
 // widgets/ - Can import from all lower layers
 import { ProductCard } from '@/features/product-card'
-import { MOCK_PRODUCTS } from '@/entities/product/model/mock-products'
+import { productRepository } from '@/entities/product'
 ```
+
+### Data Flow (No Mock Data)
+```
+Database (MySQL)
+    ↓
+Repository (entities/*/model/repository.ts)
+    ↓
+API Route (app/api/*/route.ts)
+    ↓
+Frontend (fetch in useEffect)
+    ↓
+UI Component
+```
+
+**IMPORTANT**: All data comes from MySQL database. No mock data files exist in the codebase.
 
 ### Server vs Client Components
 - **Server Components** (default): Static content, data fetching, SEO
