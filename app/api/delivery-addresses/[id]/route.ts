@@ -76,7 +76,7 @@ export async function DELETE(
       );
     }
 
-    await deliveryAddressRepository.delete(parseInt(id), userId);
+    await deliveryAddressRepository.delete(parseInt(id), parseInt(userId));
 
     return NextResponse.json({
       success: true,

@@ -8,6 +8,7 @@ import { Star, ShoppingCart, Heart, Truck, Shield, RotateCcw, ChevronLeft } from
 import { Button } from "@/shared/ui/button";
 import { Product } from "@/entities/product/model/types";
 import { CATEGORIES } from "@/shared/config/categories";
+import { ProductDetailSkeleton } from "../ProductDetailSkeleton";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -18,6 +19,13 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // TODO: Get actual userId from authentication
+    // For now using a demo userId
+    setUserId(1);
+  }, []);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -49,11 +57,7 @@ export default function ProductDetailPage() {
   }, [productId]);
 
   if (loading) {
-    return (
-      <div className="container py-20 text-center">
-        <p className="text-muted-foreground">상품을 불러오는 중...</p>
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (!product) {
@@ -259,20 +263,60 @@ export default function ProductDetailPage() {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => setIsWishlisted(!isWishlisted)}
+              onClick={async () => {
+                if (!userId) return;
+                try {
+                  if (isWishlisted) {
+                    await fetch('/api/wishlists', {
+                      method: 'DELETE',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ userId, productId: product.id })
+                    });
+                    setIsWishlisted(false);
+                  } else {
+                    await fetch('/api/wishlists', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ userId, productId: product.id })
+                    });
+                    setIsWishlisted(true);
+                  }
+                } catch (error) {
+                  console.error('Failed to toggle wishlist:', error);
+                }
+              }}
               className="px-4"
             >
               <Heart
                 className={`h-5 w-5 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`}
               />
             </Button>
-            <Button size="lg" className="flex-1">
+            <Button
+              size="lg"
+              className="flex-1"
+              onClick={async () => {
+                if (!userId) return;
+                try {
+                  await fetch('/api/carts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, productId: product.id, quantity })
+                  });
+                  alert('장바구니에 담았습니다!');
+                } catch (error) {
+                  console.error('Failed to add to cart:', error);
+                  alert('장바구니 담기에 실패했습니다.');
+                }
+              }}
+            >
               <ShoppingCart className="h-5 w-5 mr-2" />
               장바구니 담기
             </Button>
-            <Button size="lg" className="flex-1" variant="default">
-              바로 구매
-            </Button>
+            <Link href={`/checkout?productId=${product.id}&quantity=${quantity}`} className="flex-1">
+              <Button size="lg" className="w-full" variant="default">
+                바로 구매
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

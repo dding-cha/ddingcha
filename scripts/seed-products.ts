@@ -19,17 +19,17 @@ const MOCK_PRODUCTS = [
   { id: '13', name: '무선 충전 패드', price: 29000, originalPrice: 49000, discount: 41, rating: 4.5, reviews: 1543, image: '/products/charger.jpg', categoryId: 'electronics' },
   { id: '14', name: '프리미엄 립스틱 세트', price: 49000, originalPrice: 79000, discount: 38, rating: 4.8, reviews: 2876, image: '/products/lipstick.jpg', categoryId: 'beauty' },
   { id: '15', name: '키친 나이프 세트', price: 79000, originalPrice: 129000, discount: 39, rating: 4.7, reviews: 654, image: '/products/knife.jpg', categoryId: 'home' },
-  { id: '16', name: '백팩 프로', price: 89000, originalPrice: 139000, discount: 36, rating: 4.9, reviews: 3214, image: '/products/backpack.jpg', categoryId: 'fashion', trending: true },
+  { id: '16', name: '백팩 프로', price: 89000, originalPrice: 139000, discount: 36, rating: 4.9, reviews: 3214, image: '/products/backpack.jpg', categoryId: 'fashion', trending: true, badge: '⚡ 베스트' },
   { id: '17', name: '유기농 간식 세트', price: 35000, originalPrice: 55000, discount: 36, rating: 4.6, reviews: 1234, image: '/products/snacks.jpg', categoryId: 'food' },
-  { id: '18', name: '반려동물 자동급식기', price: 119000, originalPrice: 179000, discount: 34, rating: 4.8, reviews: 876, image: '/products/feeder.jpg', categoryId: 'pet' },
+  { id: '18', name: '반려동물 자동급식기', price: 119000, originalPrice: 179000, discount: 34, rating: 4.8, reviews: 876, image: '/products/feeder.jpg', categoryId: 'pet', trending: true, badge: '🔥 인기' },
   { id: '19', name: '아동용 태블릿', price: 149000, originalPrice: 229000, discount: 35, rating: 4.7, reviews: 1567, image: '/products/tablet.jpg', categoryId: 'kids' },
   { id: '20', name: '휴대용 선풍기', price: 19000, originalPrice: 29000, discount: 34, rating: 4.5, reviews: 2341, image: '/products/fan.jpg', categoryId: 'home' },
-  { id: '21', name: '게이밍 마우스', price: 69000, originalPrice: 99000, discount: 30, rating: 4.8, reviews: 1987, image: '/products/mouse.jpg', categoryId: 'electronics' },
-  { id: '22', name: '향수 세트', price: 89000, originalPrice: 139000, discount: 36, rating: 4.9, reviews: 2543, image: '/products/perfume.jpg', categoryId: 'beauty' },
-  { id: '23', name: '에어프라이어', price: 129000, originalPrice: 199000, discount: 35, rating: 4.7, reviews: 3456, image: '/products/airfryer.jpg', categoryId: 'home', trending: true },
+  { id: '21', name: '게이밍 마우스', price: 69000, originalPrice: 99000, discount: 30, rating: 4.8, reviews: 1987, image: '/products/mouse.jpg', categoryId: 'electronics', trending: true, badge: '⚡ 베스트' },
+  { id: '22', name: '향수 세트', price: 89000, originalPrice: 139000, discount: 36, rating: 4.9, reviews: 2543, image: '/products/perfume.jpg', categoryId: 'beauty', trending: true, badge: '🔥 인기' },
+  { id: '23', name: '에어프라이어', price: 129000, originalPrice: 199000, discount: 35, rating: 4.7, reviews: 3456, image: '/products/airfryer.jpg', categoryId: 'home', trending: true, badge: '🔥 인기' },
   { id: '24', name: '니트 스웨터', price: 59000, originalPrice: 89000, discount: 34, rating: 4.6, reviews: 1234, image: '/products/sweater.jpg', categoryId: 'fashion' },
-  { id: '25', name: '프로틴 보충제', price: 49000, originalPrice: 69000, discount: 29, rating: 4.8, reviews: 2109, image: '/products/protein.jpg', categoryId: 'sports' },
-  { id: '26', name: '커피 머신', price: 199000, originalPrice: 299000, discount: 33, rating: 4.9, reviews: 1876, image: '/products/coffee.jpg', categoryId: 'home' },
+  { id: '25', name: '프로틴 보충제', price: 49000, originalPrice: 69000, discount: 29, rating: 4.8, reviews: 2109, image: '/products/protein.jpg', categoryId: 'sports', trending: true, badge: '⚡ 베스트' },
+  { id: '26', name: '커피 머신', price: 199000, originalPrice: 299000, discount: 33, rating: 4.9, reviews: 1876, image: '/products/coffee.jpg', categoryId: 'home', trending: true, badge: '🔥 인기' },
   { id: '27', name: '선글라스 UV400', price: 39000, originalPrice: 69000, discount: 43, rating: 4.7, reviews: 1543, image: '/products/sunglasses.jpg', categoryId: 'fashion' },
   { id: '28', name: '유아 장난감 세트', price: 79000, originalPrice: 119000, discount: 34, rating: 4.8, reviews: 987, image: '/products/toys.jpg', categoryId: 'kids' },
   { id: '29', name: '반려견 목줄 세트', price: 29000, originalPrice: 45000, discount: 36, rating: 4.6, reviews: 654, image: '/products/leash.jpg', categoryId: 'pet' },
@@ -77,7 +77,7 @@ async function seedProducts() {
     }
 
     // Verify
-    const result = await query<any[]>('SELECT COUNT(*) as count FROM products');
+    const result = await query<any>('SELECT COUNT(*) as count FROM products') as any[];
     console.log(`📊 총 ${result[0].count}개 상품이 데이터베이스에 저장되었습니다.`);
     console.log('✅ Product seeding completed successfully!');
   } catch (error) {

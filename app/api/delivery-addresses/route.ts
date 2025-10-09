@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const addresses = await deliveryAddressRepository.findByUserId(userId);
+    const addresses = await deliveryAddressRepository.findByUserId(parseInt(userId));
 
     return NextResponse.json({ addresses }, { status: 200 });
   } catch (error) {

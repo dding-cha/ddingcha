@@ -17,7 +17,12 @@
       "Bash(npx tsx:*)",
       "Bash(node:*)",
       "Bash(xargs file:*)",
-      "Bash(timeout 30 npm run dev:*)"
+      "Bash(timeout 30 npm run dev:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(rm:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npx next:*)"
     ],
     "deny": [],
     "ask": []

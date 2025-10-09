@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "tsx scripts/seed-products.ts"
+    "db:init": "tsx scripts/drop-and-init-db.ts",
+    "db:reset": "tsx scripts/drop-and-init-db.ts && tsx scripts/seed-all.ts",
+    "db:seed": "tsx scripts/seed-all.ts",
+    "db:seed:products": "tsx scripts/seed-products.ts",
+    "db:seed:users": "tsx scripts/seed-users.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -23,6 +27,7 @@
     "mysql2": "^3.15.1",
     "next": "^15.5.4",
     "react": "^19.2.0",
+    "react-daum-postcode": "^3.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.50.1",
     "tailwind-merge": "^2.2.1",

@@ -29,57 +29,17 @@ interface Inquiry {
   answeredAt?: string
 }
 
-// 임시 데이터
-const mockInquiries: Inquiry[] = [
-  {
-    id: '1',
-    type: 'product',
-    productId: 'P001',
-    productName: '무선 이어폰',
-    customerName: '김철수',
-    customerEmail: 'kim@example.com',
-    title: '배송 지연 문의',
-    content: '주문번호 ORD-2024-001 배송이 3일째 지연되고 있습니다. 언제 받을 수 있을까요?',
-    status: 'pending',
-    createdAt: '2024-01-15 14:30',
-  },
-  {
-    id: '2',
-    type: 'product',
-    productId: 'P002',
-    productName: '스마트 워치',
-    customerName: '이영희',
-    customerEmail: 'lee@example.com',
-    title: '상품 교환 요청',
-    content: '사이즈가 맞지 않아 교환을 원합니다.',
-    status: 'pending',
-    createdAt: '2024-01-15 11:20',
-  },
-  {
-    id: '3',
-    type: 'general',
-    customerName: '박지민',
-    customerEmail: 'park@example.com',
-    title: '재입고 문의',
-    content: '무선 이어폰 블랙 색상 재입고 예정이 언제인가요?',
-    status: 'answered',
-    answer: '다음 주 화요일(1월 23일)에 재입고 예정입니다.',
-    createdAt: '2024-01-14 16:45',
-    answeredAt: '2024-01-14 17:20',
-  },
-]
-
 export default function InquiriesPage() {
-  const [inquiries, setInquiries] = useState<Inquiry[]>(mockInquiries)
+  const [inquiries, setInquiries] = useState<Inquiry[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null)
   const [answerText, setAnswerText] = useState('')
 
   const getStatusBadge = (status: Inquiry['status']) => {
     const statusConfig = {
-      pending: { label: '대기중', color: 'bg-yellow-100 text-yellow-800' },
-      answered: { label: '답변완료', color: 'bg-blue-100 text-blue-800' },
-      closed: { label: '종료', color: 'bg-gray-100 text-gray-800' },
+      pending: { label: '대기중', color: 'bg-muted text-muted-foreground' },
+      answered: { label: '답변완료', color: 'bg-accent text-accent-foreground' },
+      closed: { label: '종료', color: 'bg-card text-card-foreground' },
     }
 
     const config = statusConfig[status]
@@ -135,10 +95,10 @@ export default function InquiriesPage() {
 
       {/* 문의 통계 */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg border">
+        <div className="bg-card p-4 rounded-lg border">
           <div className="flex items-center gap-3">
-            <div className="bg-yellow-100 p-2 rounded-lg">
-              <MessageCircleIcon className="h-5 w-5 text-yellow-600" />
+            <div className="bg-muted p-2 rounded-lg">
+              <MessageCircleIcon className="h-5 w-5 text-muted-foreground" />
             </div>
             <div>
               <p className="text-xs text-muted-foreground">미답변</p>
@@ -146,10 +106,10 @@ export default function InquiriesPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg border">
+        <div className="bg-card p-4 rounded-lg border">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <MessageCircleIcon className="h-5 w-5 text-blue-600" />
+            <div className="bg-accent p-2 rounded-lg">
+              <MessageCircleIcon className="h-5 w-5 text-accent-foreground" />
             </div>
             <div>
               <p className="text-xs text-muted-foreground">답변완료</p>
@@ -157,10 +117,10 @@ export default function InquiriesPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white p-4 rounded-lg border col-span-2 md:col-span-1">
+        <div className="bg-card p-4 rounded-lg border col-span-2 md:col-span-1">
           <div className="flex items-center gap-3">
-            <div className="bg-green-100 p-2 rounded-lg">
-              <PackageIcon className="h-5 w-5 text-green-600" />
+            <div className="bg-primary p-2 rounded-lg">
+              <PackageIcon className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
               <p className="text-xs text-muted-foreground">상품 문의</p>
@@ -184,7 +144,7 @@ export default function InquiriesPage() {
       </div>
 
       {/* 문의 목록 */}
-      <div className="bg-white border rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-card border rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -202,7 +162,7 @@ export default function InquiriesPage() {
               {filteredInquiries.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                    {searchTerm ? '검색 결과가 없습니다.' : '문의가 없습니다.'}
+                    {searchTerm ? '검색 결과가 없습니다.' : '문의 내역이 없습니다.'}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -210,12 +170,12 @@ export default function InquiriesPage() {
                   <TableRow key={inquiry.id}>
                     <TableCell>
                       {inquiry.type === 'product' ? (
-                        <span className="flex items-center gap-1 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                        <span className="flex items-center gap-1 text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
                           <PackageIcon className="h-3 w-3" />
                           상품
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        <span className="flex items-center gap-1 text-xs bg-accent text-accent-foreground px-2 py-1 rounded">
                           <MessageCircleIcon className="h-3 w-3" />
                           일반
                         </span>
@@ -248,12 +208,12 @@ export default function InquiriesPage() {
       {/* 문의 상세 모달 */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-4 md:p-6 border-b flex items-center justify-between">
               <h2 className="text-xl font-bold">문의 상세</h2>
               <button
                 onClick={() => setSelectedInquiry(null)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <XIcon className="h-6 w-6" />
               </button>
@@ -264,12 +224,12 @@ export default function InquiriesPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   {selectedInquiry.type === 'product' ? (
-                    <span className="flex items-center gap-1 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                    <span className="flex items-center gap-1 text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
                       <PackageIcon className="h-3 w-3" />
                       상품 문의
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                    <span className="flex items-center gap-1 text-xs bg-accent text-accent-foreground px-2 py-1 rounded">
                       <MessageCircleIcon className="h-3 w-3" />
                       일반 문의
                     </span>
@@ -297,7 +257,7 @@ export default function InquiriesPage() {
 
                 <div>
                   <p className="text-sm text-muted-foreground">문의 내용</p>
-                  <p className="mt-1 p-3 bg-gray-50 rounded-lg">{selectedInquiry.content}</p>
+                  <p className="mt-1 p-3 bg-muted rounded-lg">{selectedInquiry.content}</p>
                 </div>
 
                 <div>
@@ -313,7 +273,7 @@ export default function InquiriesPage() {
                     <p className="text-sm font-medium">답변 내용</p>
                     <p className="text-xs text-muted-foreground">답변일시: {selectedInquiry.answeredAt}</p>
                   </div>
-                  <p className="p-3 bg-blue-50 rounded-lg">{selectedInquiry.answer}</p>
+                  <p className="p-3 bg-accent rounded-lg">{selectedInquiry.answer}</p>
                 </div>
               )}
 

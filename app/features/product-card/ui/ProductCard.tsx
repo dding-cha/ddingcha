@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Star, Heart, ShoppingCart } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Product } from '@/entities/product/model/types';
+import { useCart } from '@/shared/lib/contexts/CartContext';
 
 interface ProductCardProps {
   product: Product
@@ -13,11 +15,65 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const router = useRouter()
+  const { incrementCartCount } = useCart()
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false)
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
+  const handleQuickAdd = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    router.push(`/checkout?productId=${product.id}&quantity=1`)
+
+    setIsAddingToCart(true)
+    try {
+      const userId = 1 // TODO: Get from auth
+      const response = await fetch('/api/carts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          productId: product.id,
+          quantity: 1,
+        }),
+      })
+
+      if (response.ok) {
+        incrementCartCount()
+        // Show success feedback or redirect to cart
+        router.push('/my/cart')
+      } else {
+        console.error('Failed to add to cart')
+      }
+    } catch (error) {
+      console.error('Failed to add to cart:', error)
+    } finally {
+      setIsAddingToCart(false)
+    }
+  }
+
+  const handleAddToWishlist = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    setIsAddingToWishlist(true)
+    try {
+      const userId = 1 // TODO: Get from auth
+      const response = await fetch('/api/wishlists', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          productId: product.id,
+        }),
+      })
+
+      if (!response.ok) {
+        console.error('Failed to add to wishlist')
+      }
+    } catch (error) {
+      console.error('Failed to add to wishlist:', error)
+    } finally {
+      setIsAddingToWishlist(false)
+    }
   }
 
   return (
@@ -49,15 +105,22 @@ export function ProductCard({ product }: ProductCardProps) {
           size="icon"
           className="absolute top-12 right-3 bg-background/80 backdrop-blur-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
           aria-label="위시리스트에 추가"
+          onClick={handleAddToWishlist}
+          disabled={isAddingToWishlist}
         >
           <Heart className="h-4 w-4" />
         </Button>
 
         {/* Quick Add Overlay */}
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/95 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button size="sm" className="w-full gap-2" onClick={handleQuickAdd}>
+          <Button
+            size="sm"
+            className="w-full gap-2"
+            onClick={handleQuickAdd}
+            disabled={isAddingToCart}
+          >
             <ShoppingCart className="h-4 w-4" />
-            빠른 구매
+            {isAddingToCart ? '추가 중...' : '빠른 구매'}
           </Button>
         </div>
       </div>

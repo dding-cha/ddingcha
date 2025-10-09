@@ -1,26 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Search } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Product } from "@/entities/product/model/types";
 import { DeliveryAddress } from "@/entities/user";
+import { AddressSearchModal } from "@/features/address-search";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const productId = searchParams.get("productId");
   const quantity = parseInt(searchParams.get("quantity") || "1");
 
   // TODO: 실제 사용자 ID는 인증 시스템에서 가져와야 함
-  const userId = "demo-user-id";
+  const userId = 1;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [addresses, setAddresses] = useState<DeliveryAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [guestAddress, setGuestAddress] = useState({
+    recipientName: "",
+    phone: "",
+    postalCode: "",
+    address: "",
+    addressDetail: "",
+  });
 
   useEffect(() => {
     async function fetchData() {
@@ -59,23 +68,72 @@ export default function CheckoutPage() {
   }, [productId, router]);
 
   const handlePurchase = async () => {
-    if (!selectedAddressId) {
-      alert("배송지를 선택해주세요.");
-      return;
-    }
-
     if (!product) return;
 
     try {
-      // TODO: 실제 주문 API 호출
-      console.log("Purchase:", {
-        userId,
-        productId: product.id,
-        quantity,
-        addressId: selectedAddressId,
-        totalAmount: product.price * quantity,
+      let orderData;
+
+      // Check if using saved address or guest address
+      if (addresses.length > 0 && selectedAddressId) {
+        const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
+        if (!selectedAddress) {
+          alert("배송지를 선택해주세요.");
+          return;
+        }
+
+        orderData = {
+          userId,
+          totalAmount: product.price * quantity,
+          shippingFee,
+          recipientName: selectedAddress.recipientName,
+          recipientPhone: selectedAddress.phone,
+          postalCode: selectedAddress.postalCode,
+          address: selectedAddress.address,
+          addressDetail: selectedAddress.addressDetail || "",
+          items: [
+            {
+              productId: product.id,
+              productName: product.name,
+              price: product.price,
+              quantity,
+            },
+          ],
+        };
+      } else {
+        // Guest checkout
+        if (!guestAddress.recipientName || !guestAddress.phone || !guestAddress.postalCode || !guestAddress.address) {
+          alert("배송지 정보를 모두 입력해주세요.");
+          return;
+        }
+
+        orderData = {
+          totalAmount: product.price * quantity,
+          shippingFee,
+          recipientName: guestAddress.recipientName,
+          recipientPhone: guestAddress.phone,
+          postalCode: guestAddress.postalCode,
+          address: guestAddress.address,
+          addressDetail: guestAddress.addressDetail || "",
+          items: [
+            {
+              productId: product.id,
+              productName: product.name,
+              price: product.price,
+              quantity,
+            },
+          ],
+        };
+      }
+
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
       });
 
+      if (!response.ok) throw new Error("Failed to create order");
+
+      const result = await response.json();
       alert("주문이 완료되었습니다!");
       router.push("/");
     } catch (error) {
@@ -155,13 +213,94 @@ export default function CheckoutPage() {
           </div>
 
           {addresses.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="space-y-4">
               <p className="text-muted-foreground mb-4">
-                등록된 배송지가 없습니다
+                배송지 정보를 입력해주세요
               </p>
-              <Link href="/my/addresses">
-                <Button>배송지 추가하기</Button>
-              </Link>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    받는 분 이름 *
+                  </label>
+                  <input
+                    type="text"
+                    value={guestAddress.recipientName}
+                    onChange={(e) =>
+                      setGuestAddress({ ...guestAddress, recipientName: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    연락처 *
+                  </label>
+                  <input
+                    type="tel"
+                    value={guestAddress.phone}
+                    onChange={(e) =>
+                      setGuestAddress({ ...guestAddress, phone: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="010-0000-0000"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  우편번호 *
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={guestAddress.postalCode}
+                    className="flex-1 px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="12345"
+                    required
+                    readOnly
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddressModal(true)}
+                  >
+                    <Search className="h-4 w-4 mr-2" />
+                    주소 검색
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  주소 *
+                </label>
+                <input
+                  type="text"
+                  value={guestAddress.address}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="서울특별시 강남구 테헤란로 123"
+                  required
+                  readOnly
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  상세 주소
+                </label>
+                <input
+                  type="text"
+                  value={guestAddress.addressDetail}
+                  onChange={(e) =>
+                    setGuestAddress({ ...guestAddress, addressDetail: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="101동 1001호"
+                />
+              </div>
             </div>
           ) : (
             <div className="space-y-3">
@@ -244,11 +383,36 @@ export default function CheckoutPage() {
           size="lg"
           className="w-full"
           onClick={handlePurchase}
-          disabled={!selectedAddressId}
+          disabled={addresses.length > 0 && !selectedAddressId}
         >
           {finalAmount.toLocaleString()}원 결제하기
         </Button>
       </div>
+
+      {/* Address Search Modal */}
+      <AddressSearchModal
+        isOpen={showAddressModal}
+        onClose={() => setShowAddressModal(false)}
+        onComplete={(data) => {
+          setGuestAddress({
+            ...guestAddress,
+            postalCode: data.postalCode,
+            address: data.address,
+          });
+        }}
+      />
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-20 text-center">
+        <p className="text-muted-foreground">주문 정보를 불러오는 중...</p>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }

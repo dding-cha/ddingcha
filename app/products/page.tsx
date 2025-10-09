@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/features/product-card";
 import { Product } from "@/entities/product/model/types";
 import { CATEGORIES } from "@/shared/config/categories";
 import { Button } from "@/shared/ui/button";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
   const searchParam = searchParams.get("search");
@@ -105,5 +105,17 @@ export default function ProductsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-20 text-center">
+        <p className="text-muted-foreground">상품을 불러오는 중...</p>
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }

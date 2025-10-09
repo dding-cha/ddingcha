@@ -1,18 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, MapPin, Trash2, Edit, Star } from "lucide-react";
+import { Plus, MapPin, Trash2, Edit, Star, Search } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { DeliveryAddress } from "@/entities/user";
+import { AddressSearchModal } from "@/features/address-search";
 
 export default function MyAddressesPage() {
   // TODO: 실제 사용자 ID는 인증 시스템에서 가져와야 함
-  const userId = "demo-user-id";
+  const userId = 1;
 
   const [addresses, setAddresses] = useState<DeliveryAddress[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [showAddressModal, setShowAddressModal] = useState(false);
 
   const [formData, setFormData] = useState({
     recipientName: "",
@@ -203,16 +205,27 @@ export default function MyAddressesPage() {
               <label className="text-sm font-medium text-foreground mb-2 block">
                 우편번호 *
               </label>
-              <input
-                type="text"
-                value={formData.postalCode}
-                onChange={(e) =>
-                  setFormData({ ...formData, postalCode: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="12345"
-                required
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={formData.postalCode}
+                  onChange={(e) =>
+                    setFormData({ ...formData, postalCode: e.target.value })
+                  }
+                  className="flex-1 px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="12345"
+                  required
+                  readOnly
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowAddressModal(true)}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  주소 검색
+                </Button>
+              </div>
             </div>
 
             <div>
@@ -228,6 +241,7 @@ export default function MyAddressesPage() {
                 className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="서울특별시 강남구 테헤란로 123"
                 required
+                readOnly
               />
             </div>
 
@@ -351,6 +365,19 @@ export default function MyAddressesPage() {
           ))}
         </div>
       )}
+
+      {/* Address Search Modal */}
+      <AddressSearchModal
+        isOpen={showAddressModal}
+        onClose={() => setShowAddressModal(false)}
+        onComplete={(data) => {
+          setFormData({
+            ...formData,
+            postalCode: data.postalCode,
+            address: data.address,
+          });
+        }}
+      />
     </div>
   );
 }

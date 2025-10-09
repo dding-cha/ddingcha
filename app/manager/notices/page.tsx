@@ -24,33 +24,8 @@ interface Notice {
   updatedAt?: string
 }
 
-// 임시 데이터
-const mockNotices: Notice[] = [
-  {
-    id: '1',
-    title: '시스템 정기 점검 안내',
-    content: '2024년 1월 20일 02:00 ~ 04:00 시스템 점검이 예정되어 있습니다.',
-    important: true,
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    title: '배송비 정책 변경 안내',
-    content: '2024년 2월 1일부터 배송비가 3,000원으로 조정됩니다.',
-    important: false,
-    createdAt: '2024-01-10',
-  },
-  {
-    id: '3',
-    title: '신규 결제 수단 추가',
-    content: '카카오페이, 네이버페이 결제가 가능합니다.',
-    important: false,
-    createdAt: '2024-01-05',
-  },
-]
-
 export default function NoticesPage() {
-  const [notices, setNotices] = useState<Notice[]>(mockNotices)
+  const [notices, setNotices] = useState<Notice[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingNotice, setEditingNotice] = useState<Notice | null>(null)
   const [formData, setFormData] = useState({
@@ -140,11 +115,11 @@ export default function NoticesPage() {
 
       {/* 통계 */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-white p-4 md:p-6 rounded-lg border">
+        <div className="bg-card p-4 md:p-6 rounded-lg border">
           <p className="text-sm text-muted-foreground">전체 공지</p>
           <p className="text-2xl md:text-3xl font-bold mt-1">{notices.length}</p>
         </div>
-        <div className="bg-white p-4 md:p-6 rounded-lg border">
+        <div className="bg-card p-4 md:p-6 rounded-lg border">
           <p className="text-sm text-muted-foreground">중요 공지</p>
           <p className="text-2xl md:text-3xl font-bold mt-1">
             {notices.filter((n) => n.important).length}
@@ -153,7 +128,7 @@ export default function NoticesPage() {
       </div>
 
       {/* 공지사항 목록 */}
-      <div className="bg-white border rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-card border rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -169,7 +144,7 @@ export default function NoticesPage() {
               {notices.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    등록된 공지사항이 없습니다.
+                    공지사항이 없습니다.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -177,7 +152,7 @@ export default function NoticesPage() {
                   <TableRow key={notice.id}>
                     <TableCell>
                       {notice.important && (
-                        <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">
+                        <span className="bg-destructive text-destructive-foreground text-xs px-2 py-1 rounded">
                           중요
                         </span>
                       )}
@@ -216,14 +191,14 @@ export default function NoticesPage() {
       {/* 공지사항 등록/수정 모달 */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+          <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full">
             <div className="p-4 md:p-6 border-b flex items-center justify-between">
               <h2 className="text-xl font-bold">
                 {editingNotice ? '공지사항 수정' : '공지사항 등록'}
               </h2>
               <button
                 onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <XIcon className="h-6 w-6" />
               </button>

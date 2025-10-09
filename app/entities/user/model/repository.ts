@@ -3,11 +3,11 @@ import { User, DeliveryAddress } from './types';
 import { RowDataPacket } from 'mysql2';
 
 interface UserRow extends RowDataPacket {
-  id: string;
-  email: string;
-  password_hash: string;
-  name: string;
+  id: number;
+  email: string | null;
+  name: string | null;
   phone: string | null;
+  is_guest: boolean;
   created_at: Date;
   updated_at: Date;
   last_login: Date | null;
@@ -15,7 +15,7 @@ interface UserRow extends RowDataPacket {
 
 interface DeliveryAddressRow extends RowDataPacket {
   id: number;
-  user_id: string;
+  user_id: number;
   recipient_name: string;
   phone: string;
   postal_code: string;
@@ -31,10 +31,11 @@ function mapUserRow(row: UserRow): User {
     id: row.id,
     email: row.email,
     name: row.name,
-    phone: row.phone || undefined,
+    phone: row.phone,
+    isGuest: Boolean(row.is_guest),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    lastLogin: row.last_login || undefined,
+    lastLogin: row.last_login,
   };
 }
 
@@ -46,7 +47,7 @@ function mapDeliveryAddressRow(row: DeliveryAddressRow): DeliveryAddress {
     phone: row.phone,
     postalCode: row.postal_code,
     address: row.address,
-    addressDetail: row.address_detail || undefined,
+    addressDetail: row.address_detail,
     isDefault: Boolean(row.is_default),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -54,9 +55,9 @@ function mapDeliveryAddressRow(row: DeliveryAddressRow): DeliveryAddress {
 }
 
 export const userRepository = {
-  async findById(id: string): Promise<User | null> {
+  async findById(id: number): Promise<User | null> {
     const row = await queryOne<UserRow>(
-      'SELECT id, email, name, phone, created_at, updated_at, last_login FROM users WHERE id = ?',
+      'SELECT id, email, name, phone, is_guest, created_at, updated_at, last_login FROM users WHERE id = ?',
       [id]
     );
     return row ? mapUserRow(row) : null;
@@ -64,37 +65,36 @@ export const userRepository = {
 
   async findByEmail(email: string): Promise<User | null> {
     const row = await queryOne<UserRow>(
-      'SELECT id, email, name, phone, created_at, updated_at, last_login FROM users WHERE email = ?',
+      'SELECT id, email, name, phone, is_guest, created_at, updated_at, last_login FROM users WHERE email = ?',
       [email]
     );
     return row ? mapUserRow(row) : null;
   },
 
   async create(
-    email: string,
-    passwordHash: string,
-    name: string,
-    phone?: string
-  ): Promise<string> {
-    const id = crypto.randomUUID();
-    await query(
-      'INSERT INTO users (id, email, password_hash, name, phone) VALUES (?, ?, ?, ?, ?)',
-      [id, email, passwordHash, name, phone || null]
+    email: string | null,
+    name: string | null,
+    phone: string | null,
+    isGuest: boolean = false
+  ): Promise<number> {
+    const result: any = await query(
+      'INSERT INTO users (email, name, phone, is_guest) VALUES (?, ?, ?, ?)',
+      [email, name, phone, isGuest]
     );
-    return id;
+    return result.insertId;
   },
 
-  async updateLastLogin(userId: string): Promise<void> {
+  async updateLastLogin(userId: number): Promise<void> {
     await query('UPDATE users SET last_login = NOW() WHERE id = ?', [userId]);
   },
 };
 
 export const deliveryAddressRepository = {
-  async findByUserId(userId: string): Promise<DeliveryAddress[]> {
-    const rows = await query<DeliveryAddressRow[]>(
+  async findByUserId(userId: number): Promise<DeliveryAddress[]> {
+    const rows = await query<DeliveryAddressRow>(
       'SELECT * FROM delivery_addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC',
       [userId]
-    );
+    ) as DeliveryAddressRow[];
     return rows.map(mapDeliveryAddressRow);
   },
 
@@ -106,7 +106,7 @@ export const deliveryAddressRepository = {
     return row ? mapDeliveryAddressRow(row) : null;
   },
 
-  async findDefault(userId: string): Promise<DeliveryAddress | null> {
+  async findDefault(userId: number): Promise<DeliveryAddress | null> {
     const row = await queryOne<DeliveryAddressRow>(
       'SELECT * FROM delivery_addresses WHERE user_id = ? AND is_default = true',
       [userId]
@@ -115,7 +115,7 @@ export const deliveryAddressRepository = {
   },
 
   async create(
-    userId: string,
+    userId: number,
     data: {
       recipientName: string;
       phone: string;
@@ -133,7 +133,7 @@ export const deliveryAddressRepository = {
       );
     }
 
-    const result = await query<any>(
+    const result: any = await query(
       `INSERT INTO delivery_addresses
       (user_id, recipient_name, phone, postal_code, address, address_detail, is_default)
       VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -153,7 +153,7 @@ export const deliveryAddressRepository = {
 
   async update(
     id: number,
-    userId: string,
+    userId: number,
     data: {
       recipientName?: string;
       phone?: string;
@@ -208,14 +208,14 @@ export const deliveryAddressRepository = {
     }
   },
 
-  async delete(id: number, userId: string): Promise<void> {
+  async delete(id: number, userId: number): Promise<void> {
     await query('DELETE FROM delivery_addresses WHERE id = ? AND user_id = ?', [
       id,
       userId,
     ]);
   },
 
-  async setDefault(id: number, userId: string): Promise<void> {
+  async setDefault(id: number, userId: number): Promise<void> {
     // Unset all default addresses for this user
     await query(
       'UPDATE delivery_addresses SET is_default = false WHERE user_id = ?',

@@ -6,10 +6,12 @@ import Link from "next/link";
 import { ShoppingBag, Search, User, Menu, X } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { CATEGORIES } from "@/shared/config/categories";
+import { useCart } from "@/shared/lib/contexts/CartContext";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { cartCount } = useCart();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +51,7 @@ export function Header() {
             상품
           </Link>
           <Link
-            href="/products?trending=true"
+            href="/trending"
             className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
           >
             트렌딩
@@ -81,20 +83,26 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" aria-label="내 계정">
-            <User className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative"
-            aria-label="장바구니"
-          >
-            <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
-              0
-            </span>
-          </Button>
+          <Link href="/my/addresses">
+            <Button variant="ghost" size="icon" aria-label="내 계정">
+              <User className="h-5 w-5" />
+            </Button>
+          </Link>
+          <Link href="/my/cart">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              aria-label="장바구니"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
+                  {cartCount}
+                </span>
+              )}
+            </Button>
+          </Link>
           <Button
             variant="ghost"
             size="icon"
@@ -148,7 +156,7 @@ export function Header() {
                 ))}
               </div>
               <Link
-                href="/products?trending=true"
+                href="/trending"
                 className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
