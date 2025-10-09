@@ -40,10 +40,10 @@ export function AddressSearchModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-      <div className="relative w-full max-w-xl bg-card rounded-lg shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+      <div className="relative w-full max-w-xl bg-card rounded-lg shadow-lg max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
+        <div className="flex items-center justify-between p-4 border-b border-border flex-shrink-0">
           <h2 className="text-lg font-semibold text-foreground">주소 검색</h2>
           <Button
             variant="ghost"
@@ -56,11 +56,11 @@ export function AddressSearchModal({
         </div>
 
         {/* Daum Postcode */}
-        <div className="p-4">
+        <div className="p-4 overflow-auto flex-1">
           <DaumPostcode
             onComplete={handleComplete}
             autoClose={false}
-            style={{ height: "450px" }}
+            style={{ height: "450px", maxHeight: "60vh" }}
           />
         </div>
       </div>

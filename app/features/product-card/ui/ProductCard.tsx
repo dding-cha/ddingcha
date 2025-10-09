@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Star, Heart, ShoppingCart } from 'lucide-react';
@@ -18,6 +18,25 @@ export function ProductCard({ product }: ProductCardProps) {
   const { incrementCartCount } = useCart()
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false)
+  const [isWishlisted, setIsWishlisted] = useState(false)
+
+  useEffect(() => {
+    checkWishlistStatus()
+  }, [product.id])
+
+  const checkWishlistStatus = async () => {
+    try {
+      const userId = 1 // TODO: Get from auth
+      const response = await fetch(`/api/wishlists?userId=${userId}`)
+      if (response.ok) {
+        const data = await response.json()
+        const wishlists = data.wishlists || []
+        setIsWishlisted(wishlists.some((w: any) => w.productId === product.id))
+      }
+    } catch (error) {
+      console.error('Failed to check wishlist status:', error)
+    }
+  }
 
   const handleQuickAdd = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -57,20 +76,38 @@ export function ProductCard({ product }: ProductCardProps) {
     setIsAddingToWishlist(true)
     try {
       const userId = 1 // TODO: Get from auth
-      const response = await fetch('/api/wishlists', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          productId: product.id,
-        }),
-      })
 
-      if (!response.ok) {
-        console.error('Failed to add to wishlist')
+      if (isWishlisted) {
+        // Remove from wishlist
+        const response = await fetch('/api/wishlists', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            productId: product.id,
+          }),
+        })
+
+        if (response.ok) {
+          setIsWishlisted(false)
+        }
+      } else {
+        // Add to wishlist
+        const response = await fetch('/api/wishlists', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            productId: product.id,
+          }),
+        })
+
+        if (response.ok) {
+          setIsWishlisted(true)
+        }
       }
     } catch (error) {
-      console.error('Failed to add to wishlist:', error)
+      console.error('Failed to update wishlist:', error)
     } finally {
       setIsAddingToWishlist(false)
     }
@@ -103,12 +140,14 @@ export function ProductCard({ product }: ProductCardProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-12 right-3 bg-background/80 backdrop-blur-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
+          className={`absolute top-12 right-3 bg-background/80 backdrop-blur-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity ${
+            isWishlisted ? 'text-destructive' : ''
+          }`}
           aria-label="위시리스트에 추가"
           onClick={handleAddToWishlist}
           disabled={isAddingToWishlist}
         >
-          <Heart className="h-4 w-4" />
+          <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} />
         </Button>
 
         {/* Quick Add Overlay */}

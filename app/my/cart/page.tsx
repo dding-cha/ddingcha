@@ -142,10 +142,10 @@ export default function CartPage() {
   const finalAmount = totalAmount + shippingFee;
 
   return (
-    <div className="container py-8 max-w-6xl">
+    <div className="container py-8 max-w-6xl px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">장바구니</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">장바구니</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           총 {cartItems.length}개의 상품이 담겨있습니다
         </p>
       </div>
@@ -185,26 +185,37 @@ export default function CartPage() {
               return (
                 <div
                   key={item.id}
-                  className="p-6 border border-border rounded-lg bg-card hover:border-primary transition-colors"
+                  className="p-4 sm:p-6 border border-border rounded-lg bg-card hover:border-primary transition-colors"
                 >
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     {/* Product Image */}
-                    <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-4xl">📦</span>
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-muted rounded-lg flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
+                      <span className="text-3xl sm:text-4xl">📦</span>
                     </div>
 
                     {/* Product Info */}
                     <div className="flex-1 min-w-0">
-                      <Link href={`/products/${product.id}`}>
-                        <h3 className="font-semibold text-foreground mb-1 hover:text-primary transition-colors line-clamp-2">
-                          {product.name}
-                        </h3>
-                      </Link>
-                      <p className="text-sm text-muted-foreground mb-3">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <Link href={`/products/${product.id}`} className="flex-1 min-w-0">
+                          <h3 className="text-sm sm:text-base font-semibold text-foreground hover:text-primary transition-colors line-clamp-2">
+                            {product.name}
+                          </h3>
+                        </Link>
+                        {/* Remove Button (Mobile - Top Right) */}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveItem(item.productId)}
+                          className="flex-shrink-0 h-8 w-8 sm:hidden"
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3">
                         {product.categoryId}
                       </p>
 
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         {/* Quantity Controls */}
                         <div className="flex items-center gap-2">
                           <Button
@@ -219,9 +230,9 @@ export default function CartPage() {
                             }
                             disabled={item.quantity <= 1}
                           >
-                            <Minus className="h-4 w-4" />
+                            <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
-                          <span className="w-12 text-center text-foreground font-medium">
+                          <span className="w-10 sm:w-12 text-center text-sm sm:text-base text-foreground font-medium">
                             {item.quantity}
                           </span>
                           <Button
@@ -235,28 +246,28 @@ export default function CartPage() {
                               )
                             }
                           >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                         </div>
 
                         {/* Price */}
-                        <div className="text-right">
-                          <p className="text-lg font-bold text-foreground">
+                        <div className="text-left sm:text-right">
+                          <p className="text-base sm:text-lg font-bold text-foreground">
                             {(product.price * item.quantity).toLocaleString()}원
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             개당 {product.price.toLocaleString()}원
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Remove Button */}
+                    {/* Remove Button (Desktop - Right Side) */}
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleRemoveItem(item.productId)}
-                      className="flex-shrink-0"
+                      className="hidden sm:flex flex-shrink-0"
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
@@ -268,19 +279,19 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="p-6 border border-border rounded-lg bg-card sticky top-4">
-              <h2 className="text-lg font-semibold text-foreground mb-4">
+            <div className="p-4 sm:p-6 border border-border rounded-lg bg-card lg:sticky lg:top-4">
+              <h2 className="text-base sm:text-lg font-semibold text-foreground mb-4">
                 주문 요약
               </h2>
 
               <div className="space-y-3 mb-4">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-muted-foreground">상품 금액</span>
                   <span className="text-foreground">
                     {totalAmount.toLocaleString()}원
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-muted-foreground">배송비</span>
                   <span className="text-foreground">
                     {shippingFee === 0
@@ -298,10 +309,10 @@ export default function CartPage() {
               <div className="h-px bg-border my-4" />
 
               <div className="flex justify-between mb-6">
-                <span className="text-lg font-semibold text-foreground">
+                <span className="text-sm sm:text-lg font-semibold text-foreground">
                   총 결제 금액
                 </span>
-                <span className="text-lg font-bold text-primary">
+                <span className="text-base sm:text-lg font-bold text-primary">
                   {finalAmount.toLocaleString()}원
                 </span>
               </div>
